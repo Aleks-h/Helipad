@@ -21,8 +21,6 @@ public:
     ~History_screen();
     Database   *db;
 
-
-
 private slots:
     void on_pushButton_15_clicked();
     void createModel(const QStringList &header);
