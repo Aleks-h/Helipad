@@ -20,11 +20,12 @@ MainWindow::MainWindow(QWidget *parent)
     readConfigFromFile();
 
     settings = new Settings(this);
-    settings -> setCallBackFuncForButtonVis(VisibilityOfTakeAScreenButton);
+    //settings -> setCallBackFuncForButtonVis(VisibilityOfTakeAScreenButton);
     connect(window, &History_screen::firstWindow, this, &MainWindow::showFullScreen);
     connect(settings, &Settings::firstWindow, this, &MainWindow::showFullScreen);
     connect(window, &History_screen::thirdWindow, settings, &Settings::showFullScreen);
     connect(settings, &Settings::secondWindow, window, &History_screen::showFullScreen);
+    connect(this, &MainWindow::TakeAPicktureSignal, settings, &Settings::TakeAPictureSlot);
 
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(timerUpdate()));
@@ -36,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
 
    // ui->verticalLayout->addWidget(TakeAScreen);
 
-    ui->TakeAScreen->hide();
+    ui->TakeAScreen->show();
 //1////
 
     timer1 = new QTimer(this);
@@ -88,7 +89,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::VisibilityOfTakeAScreenButton(bool IsButtonVisibility)
+/*void MainWindow::VisibilityOfTakeAScreenButton(bool IsButtonVisibility)
 {
     qDebug() << IsButtonVisibility;
 
@@ -101,7 +102,7 @@ void MainWindow::VisibilityOfTakeAScreenButton(bool IsButtonVisibility)
 // else
  // TakeAScreen->hide();
       //                     ui->TakeAScreen->hide();
-}
+}*/
 
 
 void MainWindow::on_pushButton_7_clicked()
@@ -450,7 +451,21 @@ void MainWindow::timerUpdate()
 
 void MainWindow::on_TakeAScreen_clicked()
 {
+    ui->TakeAScreen->hide();
+    QTimer *timer = new QTimer(this);
+    timer->setSingleShot(true);
+    connect (timer, &QTimer::timeout, [=](){
+                         TakeAPicture();
+                         timer->deleteLater();
+                                            });
+    timer->start(50);
 
+}
+
+void MainWindow::TakeAPicture()
+{
+    emit TakeAPicktureSignal();
+    ui->TakeAScreen->show();
 }
 
 

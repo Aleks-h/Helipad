@@ -38,6 +38,8 @@ public slots:
 
       void slotCurrentPicture(QModelIndex);
       void on_TakeAPick_clicked();
+      void TakeAPicture();
+
 private slots:
 
 
@@ -51,7 +53,8 @@ private:
 
     void creatTabelModel();
     void createTable();
-    void TakeAPicture();
+
+
 };
 
 #endif // SCREEENSHOTWINDOW_H

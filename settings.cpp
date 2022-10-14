@@ -1,14 +1,12 @@
 #include "settings.h"
 #include "ui_settings.h"
 
-
 #include "QDebug"
 
 Settings::Settings(QWidget *parent):
     QMainWindow(parent),
     ui(new Ui::Settings)
 {
-
 
     currentLowerLimitAlarmChange = {currentLowerLimitAlarmChange1,
                                     currentLowerLimitAlarmChange2,
@@ -82,6 +80,7 @@ Settings::Settings(QWidget *parent):
 
     screen = new screeenShotWindow (this);
     connect(screen, &screeenShotWindow::exit, this, &Settings::showFullScreen);
+    connect(this, &Settings::TakeAPictureSignal, screen, &screeenShotWindow::TakeAPicture);
 
 
 }
@@ -100,14 +99,14 @@ void Settings::setHashUserPassword(QByteArray HashValue)
 void Settings::on_pushButton_13_clicked()
 {
     menuIsInactive();
-    this->close();      // Закрываем окно
+    this->close();
     emit firstWindow();
 }
 
 void Settings::on_pushButton_14_clicked()
 {
     menuIsInactive();
-    this->close();      // Закрываем окно
+    this->close();
     emit secondWindow();
 }
 
@@ -182,6 +181,11 @@ void Settings::WarningUpperLimitChanged(int sensorNumber)
     query.bindValue(":values",locationName.at(sensorNumber)+". Макс. значение-предупреждение: "
                     + s + " гр.");
     query.exec();
+}
+
+void Settings::TakeAPictureSlot()
+{
+ emit TakeAPictureSignal();
 }
 
 void Settings::saveSettingsToFile()

@@ -471,10 +471,17 @@
        <number>0</number>
       </property>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0,0,10,10,0">
+       <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0,0,0,10,10,0">
         <property name="spacing">
          <number>0</number>
         </property>
+        <item>
+         <widget class="QPushButton" name="TakeAPicture">
+          <property name="text">
+           <string>Сделать снимок</string>
+          </property>
+         </widget>
+        </item>
         <item>
          <spacer name="verticalSpacer_10">
           <property name="orientation">
@@ -796,7 +803,7 @@
         </property>
         <property name="dateTime">
          <datetime>
-          <hour>12</hour>
+          <hour>9</hour>
           <minute>0</minute>
           <second>0</second>
           <year>1999</year>

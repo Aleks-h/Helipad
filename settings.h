@@ -84,36 +84,26 @@ public slots:
     void ShowUpperLimitWarning1 (int);
     void ShowUpperLimitWarning2 (int);
     void ShowUpperLimitWarning3 (int);
+public slots:
+    void TakeAPictureSlot();
 
 private slots:
     void on_pushButton_13_clicked();
     void on_pushButton_14_clicked();
-
     void timerUpdate1();
-
     //void on_spinBox_valueChanged(const int &arg1);
-
     void on_pushButton_16_clicked();
-
     void on_pushButton_17_clicked();
-
     void on_pushButton_21_clicked();
-
     void on_pushButton_19_clicked();
-
     void on_pushButton_18_clicked();
-
     void on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime);
-
     void on_ChangeSetting_clicked();
-
     void on_Exit_clicked();
-
     void on_ChangePassword_clicked();
-
     void on_TakeAScreenWindow_clicked();
-
     void on_checkBox_toggled(bool checked);
+
 
 private:
     Ui::Settings *ui;
@@ -235,9 +225,10 @@ signals:
 
 
      void update_bd();
-
      void AlarmChangeSpinSetEnable(bool);
-
+     void TakeAPictureSignal();
 };
+
+
 
 #endif // SETTINGS_H

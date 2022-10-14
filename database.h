@@ -15,13 +15,7 @@ public:
     QSqlDatabase db;
     void closeDataBase();
 private:
-<<<<<<< HEAD
-=======
 
-<<<<<<< HEAD
->>>>>>> parent of 85dd171 (git add)
-=======
->>>>>>> parent of 85dd171 (git add)
 };
 
 #endif // DATABASE_H

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1714</width>
-    <height>1068</height>
+    <height>1096</height>
    </rect>
   </property>
   <property name="palette">
@@ -478,7 +478,7 @@
         <item>
          <widget class="QPushButton" name="pushButton">
           <property name="text">
-           <string>Снимок экрана</string>
+           <string>Сделать снимок</string>
           </property>
          </widget>
         </item>

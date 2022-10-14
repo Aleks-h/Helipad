@@ -48,8 +48,9 @@ public:
     ~MainWindow();
     Database   *db;
 
-  static void VisibilityOfTakeAScreenButton (bool IsButtonVisibility);
-  static bool screenButtonState;
+  //static void VisibilityOfTakeAScreenButton (bool IsButtonVisibility);
+  //static bool screenButtonState;
+
 
 public slots:
     void on_pushButton_7_clicked();
@@ -62,6 +63,8 @@ public slots:
     void sensorCheckLowerLimit();
 
     void on_pushButton_9_clicked();
+
+     void TakeAPicture();
 
   //  void ShowAlarmLowerLimitInSetting1 (int);
 
@@ -82,10 +85,10 @@ signals:
     void SetWarningUpperLimit2FromConfFile(int);
     void SetWarningUpperLimit3FromConfFile(int);
 
+    void TakeAPicktureSignal();
+
 
 private slots:
-
-
     void on_TakeAScreen_clicked();
 
 private:
@@ -97,6 +100,8 @@ private:
     bool button_state1 = false;
     bool button_state2 = false;
     bool button_state3 = false;
+
+
 
     QString str;
     QDateTime time;
@@ -337,5 +342,6 @@ private:
     QString name10;
 
 };
+
 
 #endif // MAINWINDOW_H
