@@ -6,7 +6,6 @@
 #include <database.h>
 #include <QDateTime>
 
-
 #include "screenshotscreen.h"
 
 
@@ -19,13 +18,15 @@ class History_screen : public QMainWindow{
 public:
     explicit History_screen(QWidget *parent = nullptr);
     ~History_screen();
-    Database   *db;
+    Database *db;
 
 private slots:
     void on_pushButton_15_clicked();
     void createModel(const QStringList &header);
     void timerUpdate1();
     void on_pushButton_17_clicked();
+
+    void on_TakeAPicture_clicked();
 
 private:
      Ui::History_screen *ui;
@@ -35,12 +36,17 @@ private:
      QString str;
      QDateTime time;
 
+      void TakeAPicture();
+
 signals:
      void firstWindow();
      void thirdWindow();
 
+     void TakeAPicktureSignal();
+
 public slots:
      void SlotCreateModel();
+     void TakeAPictureButtonVisibilitySlot(bool&);
 
 };
 

@@ -476,13 +476,6 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>Сделать снимок</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <spacer name="verticalSpacer_10">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -497,6 +490,13 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="TakeAPicture">
+          <property name="text">
+           <string>Сделать снимок</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_15">

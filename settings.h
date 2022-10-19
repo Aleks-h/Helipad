@@ -40,8 +40,6 @@ public:
     ~Settings();
     void setHashUserPassword (QByteArray HashValue);
 
-    void setCallBackFuncForButtonVis(void (*func)(bool IsButtonVisibility));
-
     int currentLowerLimitAlarmChange1;
     int currentLowerLimitAlarmChange2;
     int currentLowerLimitAlarmChange3;
@@ -84,8 +82,10 @@ public slots:
     void ShowUpperLimitWarning1 (int);
     void ShowUpperLimitWarning2 (int);
     void ShowUpperLimitWarning3 (int);
+
 public slots:
     void TakeAPictureSlot();
+    void on_checkBox_toggled(bool checked);
 
 private slots:
     void on_pushButton_13_clicked();
@@ -102,14 +102,14 @@ private slots:
     void on_Exit_clicked();
     void on_ChangePassword_clicked();
     void on_TakeAScreenWindow_clicked();
-    void on_checkBox_toggled(bool checked);
 
+
+
+    void on_TakeAPicture_clicked();
 
 private:
     Ui::Settings *ui;
     screeenShotWindow *screen;
-
-    void (*callbackFuncForPictureButtonVisability)(bool IsButtonVisibility);
 
     int LowerLimitAlarmBuffer1;
 
@@ -227,6 +227,9 @@ signals:
      void update_bd();
      void AlarmChangeSpinSetEnable(bool);
      void TakeAPictureSignal();
+
+     void TakeAPictureButtonVisibilitySignal(bool&);
+
 };
 
 

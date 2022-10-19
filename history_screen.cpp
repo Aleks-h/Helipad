@@ -23,6 +23,9 @@ History_screen::History_screen(QWidget *parent) :
    ui->tableView->scrollToBottom();
    ui->statusbar->showMessage("Москва, ООО 'Аеросвет', 2022");
 
+   ui->TakeAPicture->hide();
+
+
 }
 
 void History_screen::createModel(const QStringList &header)
@@ -69,4 +72,30 @@ void History_screen::on_pushButton_17_clicked()
 {
   this->close();
   emit thirdWindow();
+}
+
+void History_screen::on_TakeAPicture_clicked()
+{
+    ui->TakeAPicture->hide();
+    QTimer *timer = new QTimer(this);
+    timer->setSingleShot(true);
+    connect (timer, &QTimer::timeout, [=](){
+                         TakeAPicture();
+                         timer->deleteLater();
+                                            });
+    timer->start(50);
+}
+
+void History_screen::TakeAPictureButtonVisibilitySlot(bool & checked)
+{
+    checked==true?
+    ui->TakeAPicture->show():
+    ui->TakeAPicture->hide();
+}
+
+
+void History_screen::TakeAPicture()
+{
+    emit TakeAPicktureSignal();
+    ui->TakeAPicture->show();
 }

@@ -9,6 +9,7 @@ screeenShotWindow::screeenShotWindow(QWidget *parent) :
     ui(new Ui::screeenShotWindow)
 {
     ui->setupUi(this);
+    ui->TakeAPick->hide();
     createTable();
     creatTabelModel();
 }
@@ -146,5 +147,11 @@ void screeenShotWindow::on_Exit_clicked()
 {
     this -> close();
     emit exit();
+}
 
+void screeenShotWindow::TakeAPictureButtonVisibilitySlot(bool & checked)
+{
+    checked==true?
+    ui->TakeAPick->show():
+    ui->TakeAPick->hide();
 }

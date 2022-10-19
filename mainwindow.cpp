@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 
 //Global var from config file//
 int sensorsCount;            //
@@ -26,6 +26,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(window, &History_screen::thirdWindow, settings, &Settings::showFullScreen);
     connect(settings, &Settings::secondWindow, window, &History_screen::showFullScreen);
     connect(this, &MainWindow::TakeAPicktureSignal, settings, &Settings::TakeAPictureSlot);
+    connect(window, &History_screen::TakeAPicktureSignal, settings, &Settings::TakeAPictureSlot);
+
+    connect(settings, &Settings::TakeAPictureButtonVisibilitySignal, this, &MainWindow::TakeAPictureButtonVisibilitySlot);
+    connect(settings, &Settings::TakeAPictureButtonVisibilitySignal, window, &History_screen::TakeAPictureButtonVisibilitySlot);
+
 
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(timerUpdate()));
@@ -37,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
 
    // ui->verticalLayout->addWidget(TakeAScreen);
 
-    ui->TakeAScreen->show();
+    ui->takeAPicture->hide();
 //1////
 
     timer1 = new QTimer(this);
@@ -80,7 +85,10 @@ MainWindow::MainWindow(QWidget *parent)
   //  connect(this, SIGNAL(alarm1()), Indic1, SLOT(alarm()));
     //connect(this, SIGNAL(alarm2()), indicator3, SLOT(alarm()));
     //connect(this, SIGNAL(alarm3()), indicator2, SLOT(alarm()));
-
+ //   connect(window, SIGNAL(TakeAPicktureSignal()),
+  //          this,SLOT(TakeAPicture()));
+//    connect (settings, &Settings::AlarmChangeSpinSetEnable,
+//            SensorNameObjct, &QSpinBox::setEnabled);
 }
 
 
@@ -114,6 +122,13 @@ void MainWindow::on_pushButton_7_clicked()
 void MainWindow::on_pushButton_9_clicked()
 {
     settings->showFullScreen();
+}
+
+void MainWindow::TakeAPictureButtonVisibilitySlot(bool & checked)
+{
+    checked==true?
+    ui->takeAPicture->show():
+    ui->takeAPicture->hide();
 }
 
 void MainWindow::sensors (TSensor* sensor1, TSensor* sensor2, TSensor* sensor3, QLabel* locationNameLabel, QString* locationName, QVBoxLayout* TemperLayout,
@@ -266,6 +281,7 @@ void MainWindow::readConfigFromFile()
     settings.endGroup();
     }
     settings.endGroup();
+
  settings.beginGroup("sensors");
     sensorsCount = settings.value("sensorsCount").toInt();
     for (int i=1; i <= sensorsCount; i++)
@@ -449,9 +465,9 @@ void MainWindow::timerUpdate()
 
 
 
-void MainWindow::on_TakeAScreen_clicked()
+void MainWindow::on_takeAPicture_clicked()
 {
-    ui->TakeAScreen->hide();
+    ui->takeAPicture->hide();
     QTimer *timer = new QTimer(this);
     timer->setSingleShot(true);
     connect (timer, &QTimer::timeout, [=](){
@@ -465,7 +481,7 @@ void MainWindow::on_TakeAScreen_clicked()
 void MainWindow::TakeAPicture()
 {
     emit TakeAPicktureSignal();
-    ui->TakeAScreen->show();
+    ui->takeAPicture->show();
 }
 
 

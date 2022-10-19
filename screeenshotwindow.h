@@ -39,6 +39,7 @@ public slots:
       void slotCurrentPicture(QModelIndex);
       void on_TakeAPick_clicked();
       void TakeAPicture();
+      void TakeAPictureButtonVisibilitySlot(bool&);
 
 private slots:
 

@@ -63,8 +63,12 @@ Settings::Settings(QWidget *parent):
     ui -> pushButton_19 -> setEnabled(false);
     ui -> dateTimeEdit -> setEnabled(false);
     ui -> pushButton_21 -> setEnabled(true);
+    ui -> label_3 -> setEnabled(false);
+    ui -> checkBox -> setEnabled(false);
+    ui -> TakeAScreenWindow -> setEnabled(false);
     ui->statusbar->showMessage("Москва, ООО 'Аеросвет', 2022");
 
+    ui->TakeAPicture->hide();
 
     menuIsInactive();
 
@@ -82,6 +86,7 @@ Settings::Settings(QWidget *parent):
     connect(screen, &screeenShotWindow::exit, this, &Settings::showFullScreen);
     connect(this, &Settings::TakeAPictureSignal, screen, &screeenShotWindow::TakeAPicture);
 
+    connect(this, &Settings::TakeAPictureButtonVisibilitySignal, screen, &screeenShotWindow::TakeAPictureButtonVisibilitySlot);
 
 }
 
@@ -181,11 +186,6 @@ void Settings::WarningUpperLimitChanged(int sensorNumber)
     query.bindValue(":values",locationName.at(sensorNumber)+". Макс. значение-предупреждение: "
                     + s + " гр.");
     query.exec();
-}
-
-void Settings::TakeAPictureSlot()
-{
- emit TakeAPictureSignal();
 }
 
 void Settings::saveSettingsToFile()
@@ -395,6 +395,9 @@ void Settings::menuIsActive()
     ui -> pushButton_21 -> setEnabled(true);
     ui -> ChangeSetting -> setEnabled(false);
     ui -> Exit -> setEnabled(true);
+    ui -> label_3 -> setEnabled(true);
+    ui -> checkBox -> setEnabled(true);
+    ui -> TakeAScreenWindow -> setEnabled(true);
     emit AlarmChangeSpinSetEnable(true);
 }
 
@@ -414,6 +417,9 @@ void Settings::menuIsInactive()
     ui -> ChangeSetting -> setEnabled(true);
     stopUpdateTime = false;
     ui -> Exit -> setEnabled(false);
+    ui -> label_3 -> setEnabled(false);
+    ui -> checkBox -> setEnabled(false);
+    ui -> TakeAScreenWindow -> setEnabled(false);
     emit AlarmChangeSpinSetEnable(false);
 }
 
@@ -531,10 +537,6 @@ void Settings::settingSensor(QFormLayout* temperetureSensorLayout, QLabel* Senso
 
 }
 
-void Settings::setCallBackFuncForButtonVis(void (*func)(bool IsButtonVisibility))
-{
-    callbackFuncForPictureButtonVisability = func;
-}
 void Settings::on_Exit_clicked()
 {
 
@@ -600,5 +602,26 @@ void Settings::on_ChangePassword_clicked()
 
 void Settings::on_checkBox_toggled(bool checked)
 {
-  callbackFuncForPictureButtonVisability (checked);
+    emit TakeAPictureButtonVisibilitySignal(checked);
+    checked==true?
+    ui->TakeAPicture->show():
+    ui->TakeAPicture->hide();
+}
+
+void Settings::on_TakeAPicture_clicked()
+{
+     ui->TakeAPicture->hide();
+     QTimer *timer = new QTimer(this);
+     timer->setSingleShot(true);
+     connect (timer, &QTimer::timeout, [=](){
+                          TakeAPictureSlot();
+                          timer->deleteLater();
+                                             });
+     timer->start(50);
+}
+
+void Settings::TakeAPictureSlot()
+{
+    emit TakeAPictureSignal();
+    ui->TakeAPicture->show();
 }

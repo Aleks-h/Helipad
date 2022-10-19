@@ -64,7 +64,7 @@ public slots:
 
     void on_pushButton_9_clicked();
 
-     void TakeAPicture();
+    void TakeAPictureButtonVisibilitySlot(bool&);
 
   //  void ShowAlarmLowerLimitInSetting1 (int);
 
@@ -89,9 +89,11 @@ signals:
 
 
 private slots:
-    void on_TakeAScreen_clicked();
+    void on_takeAPicture_clicked();
+
 
 private:
+    void TakeAPicture();
 
     Ui::MainWindow *ui;
     History_screen *window;

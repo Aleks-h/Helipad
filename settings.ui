@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1048</width>
-    <height>1085</height>
+    <height>1096</height>
    </rect>
   </property>
   <property name="palette">
@@ -476,13 +476,6 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QPushButton" name="TakeAPicture">
-          <property name="text">
-           <string>Сделать снимок</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <spacer name="verticalSpacer_10">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -497,6 +490,13 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="TakeAPicture">
+          <property name="text">
+           <string>Сделать снимок</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_13">
@@ -604,23 +604,10 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_7" stretch="0">
+       <layout class="QVBoxLayout" name="verticalLayout_7" stretch="">
         <property name="spacing">
          <number>10</number>
         </property>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
        </layout>
       </item>
      </layout>
@@ -803,7 +790,7 @@
         </property>
         <property name="dateTime">
          <datetime>
-          <hour>9</hour>
+          <hour>6</hour>
           <minute>0</minute>
           <second>0</second>
           <year>1999</year>
