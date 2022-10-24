@@ -31,6 +31,8 @@ private:
     int TimeOut;
     int numberOfRetries;
 
+    QTimer *timer1;
+
     bool  getConnect();
 
     void openSocket(const QString& address = "192.168.3.18", const int& port = 502);

@@ -13,13 +13,14 @@ TCPModbusCommunication::~TCPModbusCommunication()
     if (modbusDevice)
         modbusDevice->disconnectDevice();
     delete modbusDevice;
+    delete timer1;
 }
 
 void TCPModbusCommunication::Connection(const QString& address, const int& port)
 {
   openSocket(address, port);
   readValue();
-  }
+}
 
 void TCPModbusCommunication::openSocket(const QString& address, const int& port)
 {
@@ -40,7 +41,7 @@ void TCPModbusCommunication::openSocket(const QString& address, const int& port)
 
 void TCPModbusCommunication::readValue()
 {
-    QTimer *timer1 = new QTimer(this);
+    timer1 = new QTimer(this);
     connect (timer1, &QTimer::timeout, [=](){
                                              readValueOnce();
                                             });
