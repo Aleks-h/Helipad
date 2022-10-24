@@ -1,4 +1,4 @@
-QT       += core gui sql multimedia serialbus serialport
+QT       += core gui sql multimedia serialbus
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11

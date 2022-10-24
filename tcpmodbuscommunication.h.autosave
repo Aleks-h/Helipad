@@ -30,6 +30,8 @@ private:
     QModbusTcpClient *modbusDevice;
     int TimeOut;
     int numberOfRetries;
+    
+    QTimer *timer1;
 
     bool  getConnect();
 

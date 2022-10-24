@@ -10,10 +10,10 @@
 int main(int argc, char *argv[])
 {
 
-    QApplication a(argc, argv);
-
+   QApplication a(argc, argv);
    QTranslator qtTranslator;
-    if (qtTranslator.load(QLocale::Russian,
+
+   if (qtTranslator.load(QLocale::Russian,
                 "qt", "_",
                 QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
     {
