@@ -104,7 +104,7 @@ void TCPModbusCommunication::onReadReady()
 void TCPModbusCommunication::writeValue()
 {
     if (!modbusDevice){return;}
-    const QVector<quint16> *Value = new QVector<quint16>{255};
+    const QVector<quint16> *Value = new QVector<quint16>{0};
     QModbusDataUnit DataUnit (QModbusDataUnit::Coils, 0, *Value);
     if (auto *reply = modbusDevice->sendWriteRequest(DataUnit, 1)) {
         if (!reply->isFinished()) {

@@ -493,7 +493,7 @@
        </spacer>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,10,10,0">
+       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,10,10,0">
         <property name="spacing">
          <number>0</number>
         </property>
@@ -509,6 +509,13 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>Отправить сообщение</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="takeAPicture">

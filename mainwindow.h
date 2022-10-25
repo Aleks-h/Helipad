@@ -93,9 +93,13 @@ signals:
 
     void startCommunication(const QString& address = "192.168.3.18", const int& port = 502);
 
+    void writeValueSignal();
+
 private slots:
     void on_takeAPicture_clicked();
 
+
+    void on_pushButton_clicked();
 
 private:
     void TakeAPicture();

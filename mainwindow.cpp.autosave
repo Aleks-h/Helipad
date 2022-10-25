@@ -515,7 +515,6 @@ void MainWindow::doModbusCommunication()
 
 void MainWindow::on_pushButton_clicked()
 {
-    qDebug()<<"123";
     emit writeValueSignal();
 }
 
