@@ -20,7 +20,6 @@
 #include <QTextCodec>
 #include <QGridLayout>
 #include <QTextBrowser>
-#include "tcpmodbuscommunication.h"
 
 #include <QLayout>
 #include <QRect>
@@ -28,7 +27,6 @@
 #include <QFormLayout>
 #include <QLCDNumber>
 
-#include <thread>
 #include <QThread>
 #include <iostream>
 #include <string>
@@ -54,7 +52,6 @@ public:
 
 
     QThread* TCPModbusThread;
-    void doModbusCommunication();
 
 public slots:
     void on_pushButton_7_clicked();
@@ -91,15 +88,8 @@ signals:
 
     void TakeAPicktureSignal();
 
-    void startCommunication(const QString& address = "192.168.3.18", const int& port = 502);
-
-    void writeValueSignal();
-
-private slots:
+ private slots:
     void on_takeAPicture_clicked();
-
-
-    void on_pushButton_clicked();
 
 private:
     void TakeAPicture();
@@ -107,11 +97,6 @@ private:
     Ui::MainWindow *ui;
     History_screen *window;
     Settings *settings;
-    TCPModbusCommunication *TCPModbus;
-
-    bool button_state1 = false;
-    bool button_state2 = false;
-    bool button_state3 = false;
 
 
 

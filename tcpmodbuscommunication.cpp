@@ -1,12 +1,12 @@
 #include "tcpmodbuscommunication.h"
 
-TCPModbusCommunication::TCPModbusCommunication() : modbusDevice {nullptr},
+TCPModbusCommunication::TCPModbusCommunication(bool &CurState) : Value{QVector<quint16>{0}},
+                                                   modbusDevice {new QModbusTcpClient(this)},
                                                    TimeOut {1000},
-                                                   numberOfRetries{3},
-                                                   DataUnit{QModbusDataUnit (QModbusDataUnit::Coils, 0, 1)}
+                                                   numberOfRetries{3}
 
 {
-
+ this -> CurState = CurState;
 }
 
 TCPModbusCommunication::~TCPModbusCommunication()
@@ -17,8 +17,9 @@ TCPModbusCommunication::~TCPModbusCommunication()
     delete timer1;
 }
 
-void TCPModbusCommunication::Connection(const QString& address, const int& port)
+void TCPModbusCommunication::Connection(bool& CurrentState, const QString& address, const int& port)
 {
+  CurState = CurrentState;
   openSocket(address, port);
   readValue();
 }
@@ -63,6 +64,7 @@ if (modbusDevice->state() != QModbusDevice::ConnectedState)
     return;
    }
 
+QModbusDataUnit DataUnit (QModbusDataUnit::Coils, 0, 1);
 if (auto * reply = modbusDevice->sendReadRequest(DataUnit, 1))
     {
     connect(reply, &QModbusReply::finished, this, &TCPModbusCommunication::onReadReady);
@@ -82,13 +84,9 @@ void TCPModbusCommunication::onReadReady()
 
     if (reply->error() == QModbusDevice::NoError) {
         const QModbusDataUnit unit = reply->result();
-        for (qsizetype i = 0, total = unit.valueCount(); i < total; ++i) {
-            const QString entry = tr("Address: %1, Value: %2").arg(unit.startAddress() + i)
-                                     .arg(QString::number(unit.value(i),
-                                          unit.registerType() <= QModbusDataUnit::Coils ? 10 : 16));
-            qDebug() << entry;
-        }
-    } else if (reply->error() == QModbusDevice::ProtocolError) {
+        CurState = unit.value(0);
+
+       } else if (reply->error() == QModbusDevice::ProtocolError) {
        qDebug() << "Read response error: %1 (Modbus exception: 0x%2) "+
                                     reply->errorString()+" "+
                                     reply->rawResult().exceptionCode();
@@ -101,11 +99,11 @@ void TCPModbusCommunication::onReadReady()
     reply->deleteLater();
 }
 
-void TCPModbusCommunication::writeValue()
+void TCPModbusCommunication::writeValue(const int &ReqState)
 {
     if (!modbusDevice){return;}
-    const QVector<quint16> *Value = new QVector<quint16>{255};
-    QModbusDataUnit DataUnit (QModbusDataUnit::Coils, 0, *Value);
+    Value[0] = ReqState;
+    QModbusDataUnit DataUnit (QModbusDataUnit::Coils, 0, Value);
     if (auto *reply = modbusDevice->sendWriteRequest(DataUnit, 1)) {
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, [reply]() {

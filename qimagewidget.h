@@ -5,6 +5,9 @@
 #include "QPainter"
 #include <QMessageBox>
 #include <QSound>
+#include <QThread>
+
+#include "tcpmodbuscommunication.h"
 
 class QImageWidget : public QWidget
 {
@@ -23,6 +26,11 @@ void updateMargins();
 int cur_picture;
 bool ISalarm = 0;
 
+static int counter;
+QString address;
+
+TCPModbusCommunication *TCPModbus;
+QThread* TCPModbusThread;
 
 
 void AlarmSet();
@@ -44,6 +52,10 @@ signals:
 void pixmapChanged();
 void update_bd();
 
+
+void startCommunication(const QString& address = "192.168.3.18", const int& port = 502);
+void writeValueSignal(const int &ReqState);
+
 public slots:
 void alarm();
 void On();
@@ -55,3 +67,5 @@ protected:
 void paintEvent(QPaintEvent *event);
 };
 #endif // QIMAGEWIDGET_H
+
+inline int QImageWidget::counter {17};

@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     db->ConnectToDatabase();
 ////
 
-    TCPModbus = new TCPModbusCommunication;
+ /*   TCPModbus = new TCPModbusCommunication;
     TCPModbusThread = new QThread(this);
 
     connect(this, &MainWindow::startCommunication, TCPModbus, &TCPModbusCommunication::Connection, Qt::QueuedConnection);
@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     TCPModbusThread->start();
     emit (startCommunication());
   //  TCPModbus -> readValue();
-  /* QTimer *timer1 = new QTimer(this);
+  *//* QTimer *timer1 = new QTimer(this);
     timer1->setSingleShot(true);
 
     connect (timer1, &QTimer::timeout, [=](){
@@ -45,7 +45,6 @@ MainWindow::MainWindow(QWidget *parent)
     readConfigFromFile();
 
     settings = new Settings(this);
-    //settings -> setCallBackFuncForButtonVis(VisibilityOfTakeAScreenButton);
     connect(window, &History_screen::firstWindow, this, &MainWindow::showFullScreen);
     connect(settings, &Settings::firstWindow, this, &MainWindow::showFullScreen);
     connect(window, &History_screen::thirdWindow, settings, &Settings::showFullScreen);
@@ -64,8 +63,6 @@ MainWindow::MainWindow(QWidget *parent)
     timer->start(1000);
     connect(settings, SIGNAL(update_bd()), window, SLOT(SlotCreateModel()));
     ui->setupUi(this);
-
-   // ui->verticalLayout->addWidget(TakeAScreen);
 
     ui->takeAPicture->hide();
 //1////
@@ -102,17 +99,6 @@ MainWindow::MainWindow(QWidget *parent)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
     ui->statusBar->showMessage("Москва, ООО 'Аеросвет', 2022");
-
-
-//    connect(this, SIGNAL(alarm1()), Indic2, SLOT(alarm()));
-  //  connect(this, SIGNAL(alarm1()), Indic1, SLOT(alarm()));
-    //connect(this, SIGNAL(alarm2()), indicator3, SLOT(alarm()));
-    //connect(this, SIGNAL(alarm3()), indicator2, SLOT(alarm()));
- //   connect(window, SIGNAL(TakeAPicktureSignal()),
-  //          this,SLOT(TakeAPicture()));
-//    connect (settings, &Settings::AlarmChangeSpinSetEnable,
-//            SensorNameObjct, &QSpinBox::setEnabled);
-
 }
 
 
@@ -120,22 +106,6 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-/*void MainWindow::VisibilityOfTakeAScreenButton(bool IsButtonVisibility)
-{
-    qDebug() << IsButtonVisibility;
-
-  if(IsButtonVisibility)
-      screenButtonState=true;
-  else
-      screenButtonState=false;
-// if (IsButtonVisibility)
- // TakeAScreen->show();
-// else
- // TakeAScreen->hide();
-      //                     ui->TakeAScreen->hide();
-}*/
-
 
 void MainWindow::on_pushButton_7_clicked()
 {
@@ -429,54 +399,6 @@ void MainWindow::subsystem(QVBoxLayout* VLay, QVBoxLayout* VLayInd, QSpacerItem*
 
 }
 
-//void MainWindow::on_pushButton_clicked()
-//{
-
-   /* if (!button_state1)
-    {
-        button_state1 = true;
-        //ui->label_9->setStyleSheet("border-radius: 5px; background-color: green;" );
-    }
-    else
-    {
-        button_state1 = false;
-      //  ui->label_9->setStyleSheet("border-radius: 5px; background-color: red;" );
-    }
-      emit alarm1();
-}
-
-void MainWindow::on_pushButton_2_clicked()
-{
-
-    if (!button_state2)
-    {
-        button_state2 = true;
-      //  ui->label_8->setStyleSheet("border-radius: 5px; background-color: green;" );
-    }
-    else
-    {
-        button_state2 = false;
-     //   ui->label_8->setStyleSheet("border-radius: 5px; background-color: red;" );
-    }
-    emit alarm2();
-}
-
-void MainWindow::on_pushButton_12_clicked()
-{
-
-    if (!button_state3)
-    {
-        button_state3 = true;
-     //   ui->label_10->setStyleSheet("border-radius: 5px; background-color: green;" );
-    }
-    else
-    {
-        button_state3 = false;
-     //   ui->label_10->setStyleSheet("border-radius: 5px; background-color: red;" );
-    }
-        emit alarm3();
-} */
-
 void MainWindow::timerUpdate()
 {
     time = QDateTime::currentDateTime();
@@ -506,17 +428,6 @@ void MainWindow::TakeAPicture()
 {
     emit TakeAPicktureSignal();
     ui->takeAPicture->show();
-}
-
-void MainWindow::doModbusCommunication()
-{
-    TCPModbus -> Connection();
-}
-
-void MainWindow::on_pushButton_clicked()
-{
-    qDebug()<<"123";
-    emit writeValueSignal();
 }
 
 //-->

@@ -11,6 +11,21 @@ QImageWidget::QImageWidget(QString a)
 connect (this, SIGNAL(pixmapChanged()), SLOT(repaint()));
 name = a;
 cur_picture_prev = 0;
+
+counter = ++counter;
+address = QStringLiteral("192.168.3.%1").arg(counter);
+qDebug()<<address;
+
+TCPModbus = new TCPModbusCommunication(CurState);
+TCPModbusThread = new QThread(this);
+
+connect(this, &QImageWidget::startCommunication, TCPModbus, &TCPModbusCommunication::Connection, Qt::QueuedConnection);
+connect(this, &QImageWidget::writeValueSignal, TCPModbus, &TCPModbusCommunication::writeValue, Qt::QueuedConnection);
+
+TCPModbus->moveToThread(TCPModbusThread);
+
+TCPModbusThread->start();
+emit (startCommunication(address, 502));
 }
 
 
@@ -26,6 +41,7 @@ void QImageWidget::On()
 
 cur_picture = 1;
 ReqState = true;
+emit writeValueSignal(ReqState);
 AlarmReset();
 if(!ISalarm){AlarmSet();}
 state(cur_picture);
@@ -35,6 +51,7 @@ void QImageWidget::Off()
 {
 cur_picture = 0;
 ReqState = false;
+emit writeValueSignal(ReqState);
 AlarmReset();
 if(!ISalarm){AlarmSet();}
 state(cur_picture);
