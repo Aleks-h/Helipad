@@ -1,12 +1,14 @@
 #include "tcpmodbuscommunication.h"
 
 TCPModbusCommunication::TCPModbusCommunication(bool &CurState) : Value{QVector<quint16>{0}},
+                                                   CurState{CurState},
                                                    modbusDevice {new QModbusTcpClient(this)},
                                                    TimeOut {1000},
                                                    numberOfRetries{3}
 
+
 {
- this -> CurState = CurState;
+
 }
 
 TCPModbusCommunication::~TCPModbusCommunication()
@@ -17,9 +19,8 @@ TCPModbusCommunication::~TCPModbusCommunication()
     delete timer1;
 }
 
-void TCPModbusCommunication::Connection(bool& CurrentState, const QString& address, const int& port)
+void TCPModbusCommunication::Connection(const QString& address, const int& port)
 {
-  CurState = CurrentState;
   openSocket(address, port);
   readValue();
 }
@@ -36,8 +37,8 @@ void TCPModbusCommunication::openSocket(const QString& address, const int& port)
     modbusDevice->setConnectionParameter
             (QModbusDevice::NetworkPortParameter, port);
 
-    modbusDevice->setTimeout(1000);
-    modbusDevice->setNumberOfRetries(3);
+    modbusDevice->setTimeout(TimeOut);
+    modbusDevice->setNumberOfRetries(numberOfRetries);
     modbusDevice->connectDevice();
 }
 
@@ -52,6 +53,7 @@ void TCPModbusCommunication::readValue()
 
 void TCPModbusCommunication::readValueOnce()
 {
+
 if (!modbusDevice)
 {
     qDebug() << "Object doesn't exsist;" ;

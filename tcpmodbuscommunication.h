@@ -26,6 +26,8 @@ public:
     virtual ~TCPModbusCommunication();
 
     QVector<quint16> Value;
+    bool &CurState;
+
 
 private:
     QModbusTcpClient *modbusDevice;
@@ -40,12 +42,11 @@ private:
     void readValueOnce();
 
 public slots:
-    void Connection(bool& CurrentState, const QString& address = "192.168.3.18", const int& port = 502);
+    void Connection(const QString& address = "192.168.3.18", const int& port = 502);
     void writeValue(const int &ReqState);
 
 private slots:
     void onReadReady();
-    bool &CurState;
 
 };
 
