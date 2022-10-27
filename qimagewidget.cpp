@@ -6,8 +6,10 @@
 #include <QSound>
 
 
-QImageWidget::QImageWidget(QString a) : button_ON_pushed{false},
+QImageWidget::QImageWidget(QString a) : cur_picture{0},
+                                        button_ON_pushed{false},
                                         button_OFF_pushed{false}
+
 {
 connect (this, SIGNAL(pixmapChanged()), SLOT(repaint()));
 name = a;
@@ -30,13 +32,15 @@ emit (startCommunication(address, 502));
 timer = new QTimer(this);
 timer1 = new QTimer(this);
 connect(timer,&QTimer::timeout, this, &QImageWidget::AlarmCheck);
-timer->start(300);
+timer->start(1000);
 }
 
 QImageWidget::~QImageWidget()
 {
 delete timer;
 delete timer1;
+delete timer2;
+delete timer3;
 delete TCPModbus;
 delete TCPModbusThread;
 }
@@ -59,8 +63,7 @@ void QImageWidget::button_on_pushed()
     connect (timer2, &QTimer::timeout, [&](){
                                              button_ON_pushed = false;
                                             });
-
-    timer2->start(1200);
+    timer2->start(1500);
 }
 
 void QImageWidget::button_off_pushed()
@@ -74,7 +77,7 @@ void QImageWidget::button_off_pushed()
     connect (timer3, &QTimer::timeout, [&](){
                                              button_OFF_pushed = false;
                                             });
-    timer3->start(1200);
+    timer3->start(1500);
 }
 
 
@@ -82,14 +85,12 @@ void QImageWidget::On()
 {
 button_on_pushed();
 
-if(button_OFF_pushed)
+if(cur_picture == 1)
     return;
 
 cur_picture = 1;
 ReqState = true;
 emit writeValueSignal(ReqState);
-//AlarmReset();
-//if(!ISalarm){AlarmSet();}
 state(cur_picture);
 }
 
@@ -97,15 +98,13 @@ void QImageWidget::Off()
 {
 button_off_pushed();
 
-if(button_ON_pushed)
+if(cur_picture == 0)
     return;
 
 cur_picture = 0;
 ReqState = false;
 emit writeValueSignal(ReqState);
 state(cur_picture);
-//AlarmReset();
-//if(!ISalarm){AlarmSet();}
 }
 
 void QImageWidget::state(int cur_picture){
@@ -117,8 +116,8 @@ void QImageWidget::state(int cur_picture){
     QSqlQuery query;
     query.prepare("insert into log (Event, date, Time) values (:name, CURRENT_DATE(), CURRENT_TIME());");
     QSound* play = new QSound (Path);
-    play -> setLoops(QSound::Infinite);
-    play -> play();
+      play -> setLoops(QSound::Infinite);
+      play -> play();
       if (ReqState)
       {
        query.bindValue(":name", "Авария работы " + name);
@@ -127,9 +126,9 @@ void QImageWidget::state(int cur_picture){
       }
       else
       {
-      query.bindValue(":name", "Авария " + name);
-      query.exec();
-      AlarmMassege2();
+       query.bindValue(":name", "Авария " + name);
+       query.exec();
+       AlarmMassege2();
       }
     delete play;
    }
@@ -215,13 +214,13 @@ painter.drawPixmap(imageRect, _originalImage);
 
 void QImageWidget::AlarmCheck()
 {
-    if (CurState != ReqState and !(timer1->isActive()))
+    if (CurState != ReqState and !(timer1->isActive()) and !ISalarm)
     {
      timer1->setSingleShot(true);
      connect(timer1,&QTimer::timeout, this, &QImageWidget::AlarmSet);
      timer1->start(700);
      }
-    else if (ISalarm)
+    if (CurState == ReqState and ISalarm)
      {
      AlarmReset();
      }
@@ -229,7 +228,7 @@ void QImageWidget::AlarmCheck()
 
 void QImageWidget::AlarmSet()
 {
-    if (CurState != ReqState)
+    if (CurState != ReqState and (!button_ON_pushed or !button_OFF_pushed))
     {
      ISalarm = true;
      cur_picture = 2;

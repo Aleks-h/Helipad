@@ -38,8 +38,6 @@ QTimer* timer;
 QTimer* timer1;
 QTimer* timer2 = nullptr;
 QTimer* timer3 = nullptr;
-QTimer* timer4;
-QTimer* timer5;
 
 static int counter;
 QString address;
