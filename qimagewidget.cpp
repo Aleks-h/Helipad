@@ -6,33 +6,27 @@
 #include <QSound>
 
 
-QImageWidget::QImageWidget(QString a) : cur_picture{0},
+QImageWidget::QImageWidget(QString& name, int& numberOfSub,
+                                   QVector<bool>& CurState)
+                                      : cur_picture{0},
                                         button_ON_pushed{false},
-                                        button_OFF_pushed{false}
+                                        button_OFF_pushed{false},
+                                        numberOfsubsystem{numberOfSub},
+                                        ReqState{0},
+                                        CurState{CurState[numberOfSub]}
+
 
 {
 connect (this, SIGNAL(pixmapChanged()), SLOT(repaint()));
-name = a;
+this -> name = name;
 cur_picture_prev = 0;
 
-counter = ++counter;
-address = QStringLiteral("192.168.3.%1").arg(counter);
-qDebug()<<address;
-
-TCPModbus = new TCPModbusCommunication(CurState);
-TCPModbusThread = new QThread(this);
-
-connect(this, &QImageWidget::startCommunication, TCPModbus, &TCPModbusCommunication::Connection, Qt::QueuedConnection);
-connect(this, &QImageWidget::writeValueSignal, TCPModbus, &TCPModbusCommunication::writeValue, Qt::QueuedConnection);
-
-TCPModbus->moveToThread(TCPModbusThread);
-
-TCPModbusThread->start();
-emit (startCommunication(address, 502));
 timer = new QTimer(this);
 timer1 = new QTimer(this);
 connect(timer,&QTimer::timeout, this, &QImageWidget::AlarmCheck);
 timer->start(1000);
+
+
 }
 
 QImageWidget::~QImageWidget()
@@ -41,8 +35,6 @@ delete timer;
 delete timer1;
 delete timer2;
 delete timer3;
-delete TCPModbus;
-delete TCPModbusThread;
 }
 
 
@@ -63,7 +55,7 @@ void QImageWidget::button_on_pushed()
     connect (timer2, &QTimer::timeout, [&](){
                                              button_ON_pushed = false;
                                             });
-    timer2->start(1500);
+    timer2->start(1700);
 }
 
 void QImageWidget::button_off_pushed()
@@ -77,7 +69,7 @@ void QImageWidget::button_off_pushed()
     connect (timer3, &QTimer::timeout, [&](){
                                              button_OFF_pushed = false;
                                             });
-    timer3->start(1500);
+    timer3->start(1700);
 }
 
 
@@ -85,12 +77,16 @@ void QImageWidget::On()
 {
 button_on_pushed();
 
-if(cur_picture == 1)
+//if(cur_picture == 1)
+ //  return;
+
+if(ReqState == true)
     return;
 
 cur_picture = 1;
 ReqState = true;
-emit writeValueSignal(ReqState);
+
+emit writeValueSignal(numberOfsubsystem, ReqState);
 state(cur_picture);
 }
 
@@ -101,9 +97,12 @@ button_off_pushed();
 if(cur_picture == 0)
     return;
 
+//if(cur_picture == 0)
+ //   return;
+
 cur_picture = 0;
 ReqState = false;
-emit writeValueSignal(ReqState);
+emit writeValueSignal(numberOfsubsystem, ReqState);
 state(cur_picture);
 }
 
@@ -249,5 +248,7 @@ void QImageWidget::AlarmReset()
         }
         ISalarm = false;
 }
+
+
 
 

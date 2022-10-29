@@ -28,8 +28,8 @@
 #include <QLCDNumber>
 
 #include <QThread>
-#include <iostream>
-#include <string>
+
+#include "tcpmodbuscommunication.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -49,10 +49,6 @@ public:
     ~MainWindow();
     Database   *db;
 
-
-
-    QThread* TCPModbusThread;
-
 public slots:
     void on_pushButton_7_clicked();
 
@@ -67,12 +63,10 @@ public slots:
 
     void TakeAPictureButtonVisibilitySlot(bool&);
 
+     void logging(QString);
   //  void ShowAlarmLowerLimitInSetting1 (int);
 
 signals:
-    void alarm1();
-    void alarm2();
-    void alarm3();
 
     void SetAlarmLowerLimit1FromConfFile(int);
     void SetAlarmLowerLimit2FromConfFile(int);
@@ -88,8 +82,13 @@ signals:
 
     void TakeAPicktureSignal();
 
+    void startCommunication(const QString& address = "192.168.3.18", const int& port = 502);
+
+    void update_bd();
+
  private slots:
     void on_takeAPicture_clicked();
+
 
 private:
     void TakeAPicture();
@@ -98,12 +97,26 @@ private:
     History_screen *window;
     Settings *settings;
 
+    void CurStateInit
+          (int numberOfSubsystem);
 
 
     QString str;
     QDateTime time;
     QTimer *timer;
     QTimer *timer1;
+
+    QString address;
+    QString port;
+    QVector<bool> CurStates;
+    TCPModbusCommunication *TCPModbus;
+    QThread* TCPModbusThread;
+
+    QMessageBox* massege;
+
+    QString Path = "./sound.wav";
+
+    bool errorWarning;
 
     void sensors (TSensor* sensor1, TSensor* sensor2, TSensor* sensor3, QLabel* locationNameLabel, QString* locationName, QVBoxLayout* TemperLayout,
                     QVBoxLayout* TemperLayoutFull, QFormLayout* FormLayout,  QLabel* sensorNameLabel1, QString* sensorName1,
@@ -245,7 +258,7 @@ private:
     QList<QString*> name;
 
     void subsystem (QVBoxLayout* VLay, QVBoxLayout* VLayInd, QSpacerItem* VSpItem, QLabel* Label,
-                    QPushButton* PButOn, QImageWidget* Indic, QPushButton* PButOff, QString* name);
+                    QPushButton* PButOn, QImageWidget* Indic, QPushButton* PButOff, QString* name, int* i);
 
 
     QVBoxLayout* VLay1;

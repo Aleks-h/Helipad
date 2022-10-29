@@ -11,6 +11,10 @@
 #include <QDebug>
 #include <QTimer>
 #include <QtGlobal>
+#include <QSqlQuery>
+#include <QString>
+#include <QMessageBox>
+#include <QSound>
 
 
 QT_BEGIN_NAMESPACE
@@ -22,28 +26,39 @@ class TCPModbusCommunication : public QObject
     Q_OBJECT
 
 public:
-    TCPModbusCommunication(bool &CurState);
+    TCPModbusCommunication(QVector <bool>& CurantState);
     virtual ~TCPModbusCommunication();
 
     QVector<quint16> Value;
-    bool &CurState;
+    QVector<bool> &CurState;
 
 
 private:
     QModbusTcpClient *modbusDevice;
     int TimeOut;
     int numberOfRetries;
-    bool answer;
+
+    QString address;
+    QString port;
 
     QTimer *timer1;
+
 
     void openSocket(const QString& address = "192.168.3.18", const int& port = 502);
     void readValue();
     void readValueOnce();
 
+    void errorCheck();
+    QString error;
+    QString curErr;
+
+
+signals:
+    void logging(QString Data);
+
 public slots:
     void Connection(const QString& address = "192.168.3.18", const int& port = 502);
-    void writeValue(const int &ReqState);
+    void writeValue(int subsystemNmbr, bool ReqState);
 
 private slots:
     void onReadReady();

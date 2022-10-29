@@ -10,32 +10,19 @@ QString locationName3;       //
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , address{"192.168.3.18"}
+    , port{502} , errorWarning{false}
 {
     db = new Database();
     db->ConnectToDatabase();
-////
 
- /*   TCPModbus = new TCPModbusCommunication;
+    CurStateInit(6);
+    TCPModbus = new TCPModbusCommunication(CurStates);
     TCPModbusThread = new QThread(this);
-
-    connect(this, &MainWindow::startCommunication, TCPModbus, &TCPModbusCommunication::Connection, Qt::QueuedConnection);
-    connect(this, &MainWindow::writeValueSignal, TCPModbus, &TCPModbusCommunication::writeValue, Qt::QueuedConnection);
-
     TCPModbus->moveToThread(TCPModbusThread);
-
     TCPModbusThread->start();
-    emit (startCommunication());
-  //  TCPModbus -> readValue();
-  *//* QTimer *timer1 = new QTimer(this);
-    timer1->setSingleShot(true);
-
-    connect (timer1, &QTimer::timeout, [=](){
-                             TCPModbus -> readValue();
-                             timer1->deleteLater();
-                                            });
-    timer1->start(10000);
-*/
-
+    connect(this, &MainWindow::startCommunication, TCPModbus, &TCPModbusCommunication::Connection, Qt::QueuedConnection);
+    emit (startCommunication(address,502));
 
 
     window = new History_screen(this);
@@ -62,6 +49,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(timer,SIGNAL(timeout()),settings,SLOT(timerUpdate1()));
     timer->start(1000);
     connect(settings, SIGNAL(update_bd()), window, SLOT(SlotCreateModel()));
+
+    connect(this, &MainWindow::update_bd, window, &History_screen::SlotCreateModel);
+    connect(TCPModbus, &TCPModbusCommunication::logging, this, &MainWindow::logging);
+
     ui->setupUi(this);
 
     ui->takeAPicture->hide();
@@ -93,18 +84,21 @@ MainWindow::MainWindow(QWidget *parent)
     for(int i=0;  i < numberOfSubsystem; i++)
     {
         subsystem(VLay.at(i), VLayInd.at(i), VSpItem.at(i), Label.at(i),
-                  PButOn.at(i), Indic.at(i), PButOff.at(i), name.at(i));
+                  PButOn.at(i), Indic.at(i), PButOff.at(i), name.at(i), &i);
     }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
     ui->statusBar->showMessage("Москва, ООО 'Аеросвет', 2022");
+
 }
 
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete TCPModbus;
+    delete TCPModbusThread;
 }
 
 void MainWindow::on_pushButton_7_clicked()
@@ -255,6 +249,43 @@ void MainWindow::sensors (TSensor* sensor1, TSensor* sensor2, TSensor* sensor3, 
 }
 
 
+void MainWindow::logging(QString message)
+{
+    QSqlQuery query;
+    query.prepare("insert into log (Event, date, Time) values (:name, CURRENT_DATE(), CURRENT_TIME());");
+    query.bindValue(":name", message);
+    query.exec();
+    emit update_bd();
+    if(message != "Модбас, соеденение установлено" and errorWarning == false)
+    {
+        errorWarning = true;
+        QSound* play = new QSound (Path);
+        play -> setLoops(QSound::Infinite);
+        play -> play();
+        massege = new QMessageBox;
+        massege -> setText("Ошибка модбас соеденения");
+        massege -> setDetailedText("Ошибка связи Modbus TCP");
+        massege -> addButton(tr("Подтвердить"), QMessageBox::ActionRole);
+        massege -> setIcon(QMessageBox::Critical);
+        massege -> exec();
+        delete massege;
+        delete play;
+        if (massege->clickedButton()) {
+
+            QSqlQuery query;
+            query.prepare("insert into log (Event, date, Time) values (:name, CURRENT_DATE(), CURRENT_TIME());");
+            query.bindValue(":name","Ошибка модбас подтверждена");
+            query.exec();
+            emit update_bd();
+
+         }
+    }
+        if(message == "Модбас, соеденение установлено")
+            {
+            errorWarning = false;
+            }
+}
+
 void MainWindow::readConfigFromFile()
 {   
  QSettings settings("settingsExt.ini",QSettings::IniFormat);
@@ -353,7 +384,7 @@ void MainWindow::readSettingsFromFile()
 
 
 void MainWindow::subsystem(QVBoxLayout* VLay, QVBoxLayout* VLayInd, QSpacerItem* VSpItem, QLabel* Label,
-                           QPushButton* PButOn, QImageWidget* Indic, QPushButton* PButOff, QString* name)
+                           QPushButton* PButOn, QImageWidget* Indic, QPushButton* PButOff, QString* name, int* i)
 {
     VLay = new QVBoxLayout (this);
     VLayInd = new QVBoxLayout (this);
@@ -370,9 +401,10 @@ void MainWindow::subsystem(QVBoxLayout* VLay, QVBoxLayout* VLayInd, QSpacerItem*
     PButOn->setMinimumSize(150, 100);
     PButOn->setMaximumSize(150, 100);
 
-    Indic = new QImageWidget (*name);
+    Indic = new QImageWidget (*name, *i, CurStates);
     Indic->setMinimumSize(150, 100);
     Indic->setMaximumSize(150, 100);
+
 
     PButOff = new QPushButton (this);
     PButOff->setText("Откл.");
@@ -389,11 +421,11 @@ void MainWindow::subsystem(QVBoxLayout* VLay, QVBoxLayout* VLayInd, QSpacerItem*
 
     connect(Indic, SIGNAL(update_bd()), window, SLOT(SlotCreateModel()));
 
-    connect(PButOn, &QPushButton::clicked,
-    Indic, &QImageWidget::On);
+    connect(Indic, &QImageWidget::writeValueSignal, TCPModbus, &TCPModbusCommunication::writeValue);
 
-    connect(PButOff, &QPushButton::clicked,
-            Indic, &QImageWidget::Off);
+    connect(PButOn, &QPushButton::clicked,Indic, &QImageWidget::On);
+
+    connect(PButOff, &QPushButton::clicked, Indic, &QImageWidget::Off);
 
      ui->horizontalLayout->addLayout(VLay);
 
@@ -441,6 +473,13 @@ void MainWindow::sensorCheckLowerLimit()
 {
   //  sensor1->CheckAlarmLowerLimit();
 }
+
+void MainWindow::CurStateInit(int numberOfSubsystem)
+{
+   QVector<bool> a(numberOfSubsystem);
+   CurStates = a;
+}
+
 
 void MainWindow::initVariablesSubsys()
 {

@@ -7,13 +7,12 @@
 
 Database::Database()
 {
-
 }
 
 void Database::ConnectToDatabase()
 {        
         qDebug()<<"Соеденение с базой данных...";
-        db = QSqlDatabase::addDatabase("QMYSQL");
+        db = QSqlDatabase::addDatabase ("QMYSQL");
             db.setHostName("localhost");
             db.setDatabaseName("Helipad");
             db.setUserName("user");

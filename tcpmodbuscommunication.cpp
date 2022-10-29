@@ -1,10 +1,12 @@
 #include "tcpmodbuscommunication.h"
 
-TCPModbusCommunication::TCPModbusCommunication(bool &CurState) : Value{QVector<quint16>{0}},
-                                                   CurState{CurState},
-                                                   modbusDevice {new QModbusTcpClient(this)},
-                                                   TimeOut {1000},
-                                                   numberOfRetries{3}
+TCPModbusCommunication::TCPModbusCommunication(QVector<bool> &CurantState) :
+                                                    Value{QVector<quint16>{0}},
+                                                    CurState{CurantState},
+                                                    modbusDevice {new QModbusTcpClient(this)},
+                                                    TimeOut {1000},
+                                                    numberOfRetries{3},
+                                                    error{" "},curErr{" "}
 
 
 {
@@ -31,6 +33,8 @@ void TCPModbusCommunication::openSocket(const QString& address, const int& port)
        {
         modbusDevice = new QModbusTcpClient(this);
        }
+    this -> address = address;
+    this -> port = port;
 
     modbusDevice->setConnectionParameter
             (QModbusDevice::NetworkAddressParameter, address);
@@ -55,27 +59,47 @@ void TCPModbusCommunication::readValueOnce()
 {
 
 if (!modbusDevice)
-{
+    {
     qDebug() << "Object doesn't exsist;" ;
     return;
-}
+    }
 
 if (modbusDevice->state() != QModbusDevice::ConnectedState)
    {
-    qDebug() << "Connection fault" ;
+    error = "Модбас, не удалось установить соеденение с хостом " + address;
+    errorCheck();
     return;
    }
 
-QModbusDataUnit DataUnit (QModbusDataUnit::Coils, 0, 1);
+QModbusDataUnit DataUnit (QModbusDataUnit::Coils, 0, CurState.size());
 if (auto * reply = modbusDevice->sendReadRequest(DataUnit, 1))
     {
     connect(reply, &QModbusReply::finished, this, &TCPModbusCommunication::onReadReady);
     }
 else
     {
-    qDebug() << "Read error: " + modbusDevice->errorString();
+    error = "Модбас, ошибка чтения: " + modbusDevice->errorString();
+    errorCheck();
 }
+   // if(modbusDevice->errorString() == 0)
+    //{
+   //     error = "Связь с устройством восстановлена";
+   //     errorCheck();
+    //}
 }
+
+void TCPModbusCommunication::errorCheck()
+{
+    if (error != curErr)
+    {
+        curErr=error;
+        logging(error);
+
+
+    }
+
+}
+
 
 
 void TCPModbusCommunication::onReadReady()
@@ -86,35 +110,43 @@ void TCPModbusCommunication::onReadReady()
 
     if (reply->error() == QModbusDevice::NoError) {
         const QModbusDataUnit unit = reply->result();
-        CurState = unit.value(0);
+
+        error = "Модбас, соеденение установлено";
+        errorCheck();
+
+        for (int i = 0, total = unit.valueCount(); i < total; ++i)
+        {
+        CurState[i] = unit.value(i);
+        }
+
 
        } else if (reply->error() == QModbusDevice::ProtocolError) {
-       qDebug() << "Read response error: %1 (Modbus exception: 0x%2) "+
-                                    reply->errorString()+" "+
-                                    reply->rawResult().exceptionCode();
+
+       error = "Модбас, чтение, ошибка ответа: " + reply->errorString();
+       errorCheck();
+
+
     } else {
-        qDebug() << "Read response error: %1 (code: 0x%2) " +
-                                    reply->errorString() + " " +
-                                    reply->error();
+        error = "Модбас, чтение, ошибка ответа: " + reply->errorString();
+        errorCheck();
     }
 
     reply->deleteLater();
 }
 
-void TCPModbusCommunication::writeValue(const int &ReqState)
+void TCPModbusCommunication::writeValue(int subsystemNmbr, bool ReqState)
 {
-    if (!modbusDevice){return;}
-    Value[0] = ReqState;
-    QModbusDataUnit DataUnit (QModbusDataUnit::Coils, 0, Value);
+    Value[0]=ReqState;
+    QModbusDataUnit DataUnit (QModbusDataUnit::Coils, subsystemNmbr, Value);
     if (auto *reply = modbusDevice->sendWriteRequest(DataUnit, 1)) {
         if (!reply->isFinished()) {
-            connect(reply, &QModbusReply::finished, this, [reply]() {
+            connect(reply, &QModbusReply::finished, this, [=]() {
                 if (reply->error() == QModbusDevice::ProtocolError) {
-                    qDebug() << "Write response error:" + reply->errorString() +
-                                "Modbus exception:" + reply->rawResult().exceptionCode();
+                   error = "Модбас, запись, ошибка ответа: " + reply->errorString();
+                   errorCheck();
                 } else if (reply->error() != QModbusDevice::NoError) {
-                    qDebug() << "Write response error:" + reply->errorString()
-                                + " (code: " + reply->error();
+                   error = "Модбас, запись, ошибка ответа: " + reply->errorString();
+                   errorCheck();
                 }
                 reply->deleteLater();
             });
@@ -123,7 +155,8 @@ void TCPModbusCommunication::writeValue(const int &ReqState)
             reply->deleteLater();
         }
     } else {
-            qDebug() << "Write error: " + modbusDevice->errorString();
+            error = "Модбас, ошибка записи: " + modbusDevice->errorString();
+            errorCheck();
     }
 }
 

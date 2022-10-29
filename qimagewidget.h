@@ -6,15 +6,14 @@
 #include <QMessageBox>
 #include <QSound>
 #include <QThread>
-#include <memory>
 
-#include "tcpmodbuscommunication.h"
+#include <QTimer>
 
 class QImageWidget : public QWidget
 {
 Q_OBJECT
 public:
-explicit QImageWidget (QString);
+QImageWidget (QString& name, int& numberOfSub, QVector<bool>& CurState);
 virtual~QImageWidget();
 QString name;
 void state(const int);
@@ -28,6 +27,8 @@ void updateMargins();
 int cur_picture;
 bool ISalarm = 0;
 
+
+
 void button_on_pushed();
 void button_off_pushed();
 
@@ -39,18 +40,15 @@ QTimer* timer1;
 QTimer* timer2 = nullptr;
 QTimer* timer3 = nullptr;
 
-static int counter;
-QString address;
-
-TCPModbusCommunication *TCPModbus;
-QThread* TCPModbusThread;
-
 
 
 void AlarmReset();
 
-bool ReqState = false;
-bool CurState = false;
+int numberOfsubsystem;
+
+bool ReqState;
+bool& CurState;
+
 
 void AlarmMassege1();
 void AlarmMassege2();
@@ -65,9 +63,8 @@ signals:
 void pixmapChanged();
 void update_bd();
 
+bool writeValueSignal(int numberOfsubsystem, bool ReqState);
 
-void startCommunication(const QString& address = "192.168.3.18", const int& port = 502);
-void writeValueSignal(const int &ReqState);
 
 public slots:
 
@@ -85,4 +82,3 @@ void paintEvent(QPaintEvent *event);
 };
 #endif // QIMAGEWIDGET_H
 
-inline int QImageWidget::counter {17};
