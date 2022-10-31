@@ -22,12 +22,13 @@ void setPixmap(QPixmap pixmap);
 
 private:
 QPixmap _originalImage;
+
 int cur_picture_prev;
 void updateMargins();
 int cur_picture;
 bool ISalarm = 0;
 
-
+bool enableBit;
 
 void button_on_pushed();
 void button_off_pushed();
@@ -66,10 +67,13 @@ void update_bd();
 bool writeValueSignal(int numberOfsubsystem, bool ReqState);
 
 
+
 public slots:
 
 void On();
 void Off();
+
+void setEnabled(bool);
 
 private slots:
 

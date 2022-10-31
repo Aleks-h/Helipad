@@ -68,6 +68,8 @@ public slots:
 
 signals:
 
+    void enableSignal(bool);
+
     void SetAlarmLowerLimit1FromConfFile(int);
     void SetAlarmLowerLimit2FromConfFile(int);
     void SetAlarmLowerLimit3FromConfFile(int);
@@ -124,6 +126,8 @@ private:
                   QLCDNumber* sensorValue2,  QLabel* sensorNameLabel3, QString* sensorName3,
                   QLCDNumber* sensorValue3, QFrame* Frame, QSpacerItem* VSpItemTemp, QString* unit1, QString* unit2, QString* unit3, int numberSensor);
 
+    QLabel* AlarmMassege;
+    QVBoxLayout* AlarmLayout;
 
     QSpacerItem* HSpItem;
 

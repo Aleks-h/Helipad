@@ -9,11 +9,13 @@
 QImageWidget::QImageWidget(QString& name, int& numberOfSub,
                                    QVector<bool>& CurState)
                                       : cur_picture{0},
+                                        enableBit{false},
                                         button_ON_pushed{false},
                                         button_OFF_pushed{false},
                                         numberOfsubsystem{numberOfSub},
                                         ReqState{0},
                                         CurState{CurState[numberOfSub]}
+
 
 
 {
@@ -42,6 +44,22 @@ void QImageWidget::setPixmap(QPixmap pixmap)
 {
 _originalImage = pixmap;
 emit pixmapChanged();
+}
+
+void QImageWidget::setEnabled(bool enable)
+{
+    if(!enable)
+    {
+    enableBit = true;
+    setPixmap(QPixmap ("./Pictures/State_1.png"));
+    emit pixmapChanged();
+    }else{
+    enableBit = false;
+    ReqState = CurState;
+    cur_picture_prev = -1;
+    AlarmReset();
+    state(cur_picture);
+    }
 }
 
 void QImageWidget::button_on_pushed()
@@ -75,6 +93,9 @@ void QImageWidget::button_off_pushed()
 
 void QImageWidget::On()
 {
+if(enableBit)
+    return;
+
 button_on_pushed();
 
 //if(cur_picture == 1)
@@ -92,6 +113,9 @@ state(cur_picture);
 
 void QImageWidget::Off()
 {
+if(enableBit)
+    return;
+
 button_off_pushed();
 
 if(cur_picture == 0)
@@ -201,12 +225,12 @@ void QImageWidget::paintEvent(QPaintEvent *)
 QPainter painter(this);
 
 if (_originalImage.isNull()){
-setPixmap(QPixmap("./Pictures/State_1.png"));
-}
-else {
-QRect imageRect = rect();
-painter.drawPixmap(imageRect, _originalImage);
-}
+    setPixmap(QPixmap("./Pictures/State_1.png"));
+}else{
+    QRect imageRect = rect();
+    painter.drawPixmap(imageRect, _originalImage);
+    painter.end();
+    }
 }
 
 

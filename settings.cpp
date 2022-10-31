@@ -66,7 +66,7 @@ Settings::Settings(QWidget *parent):
     ui -> label_3 -> setEnabled(false);
     ui -> checkBox -> setEnabled(false);
     ui -> TakeAScreenWindow -> setEnabled(false);
-    ui->statusbar->showMessage("Москва, ООО 'Аеросвет', 2022");
+    ui -> statusbar->showMessage("Москва, ООО 'Аеросвет', 2022");
 
     ui->TakeAPicture->hide();
 
@@ -309,7 +309,7 @@ void Settings::ShowUpperLimitWarning3(int value)
 
 void Settings::on_pushButton_17_clicked()
 {
-    emit CancelSetAlarmLimit();
+ emit CancelSetAlarmLimit();
 }
 
 void Settings::on_pushButton_21_clicked()

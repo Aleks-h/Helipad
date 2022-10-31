@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     emit (startCommunication(address,502));
 
 
+
     window = new History_screen(this);
 
     initVariablesSubsys();
@@ -42,7 +43,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(settings, &Settings::TakeAPictureButtonVisibilitySignal, this, &MainWindow::TakeAPictureButtonVisibilitySlot);
     connect(settings, &Settings::TakeAPictureButtonVisibilitySignal, window, &History_screen::TakeAPictureButtonVisibilitySlot);
 
-
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(timerUpdate()));
     connect(timer,SIGNAL(timeout()),window,SLOT(timerUpdate1()));
@@ -55,13 +55,26 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->setupUi(this);
 
+
+    AlarmMassege = new QLabel(this);
+    AlarmLayout = new QVBoxLayout(this);
+    AlarmMassege->setStyleSheet("color: rgb(255, 0, 0); font-size: 30px");
+    AlarmMassege->setAlignment(Qt::AlignCenter);
+    AlarmMassege->setText("Нет связи с модулем управления ССО!");
+    AlarmLayout->addWidget(AlarmMassege);
+    ui->verticalLayout_3->addItem(AlarmLayout);
+
+
     ui->takeAPicture->hide();
 //1////
+
+
 
     timer1 = new QTimer(this);
     timer1->start(1000);
     HSpItem=new QSpacerItem(630, 1, QSizePolicy::Maximum, QSizePolicy::Ignored);
     ui->horizontalLayout_3->addItem(HSpItem);
+
 
 
     for(int i=0; i<sensorsCount; i++)
@@ -74,6 +87,7 @@ MainWindow::MainWindow(QWidget *parent)
              unit2.at(i),unit3.at(i), i);
     }
      readSettingsFromFile();
+
 
 
     ////////////////////////
@@ -249,42 +263,6 @@ void MainWindow::sensors (TSensor* sensor1, TSensor* sensor2, TSensor* sensor3, 
 }
 
 
-void MainWindow::logging(QString message)
-{
-    QSqlQuery query;
-    query.prepare("insert into log (Event, date, Time) values (:name, CURRENT_DATE(), CURRENT_TIME());");
-    query.bindValue(":name", message);
-    query.exec();
-    emit update_bd();
-    if(message != "Модбас, соеденение установлено" and errorWarning == false)
-    {
-        errorWarning = true;
-        QSound* play = new QSound (Path);
-        play -> setLoops(QSound::Infinite);
-        play -> play();
-        massege = new QMessageBox;
-        massege -> setText("Ошибка модбас соеденения");
-        massege -> setDetailedText("Ошибка связи Modbus TCP");
-        massege -> addButton(tr("Подтвердить"), QMessageBox::ActionRole);
-        massege -> setIcon(QMessageBox::Critical);
-        massege -> exec();
-        delete massege;
-        delete play;
-        if (massege->clickedButton()) {
-
-            QSqlQuery query;
-            query.prepare("insert into log (Event, date, Time) values (:name, CURRENT_DATE(), CURRENT_TIME());");
-            query.bindValue(":name","Ошибка модбас подтверждена");
-            query.exec();
-            emit update_bd();
-
-         }
-    }
-        if(message == "Модбас, соеденение установлено")
-            {
-            errorWarning = false;
-            }
-}
 
 void MainWindow::readConfigFromFile()
 {   
@@ -378,7 +356,6 @@ void MainWindow::readSettingsFromFile()
       emit SetWarningUpperLimit3FromConfFile(WarningHighLimit3);
 
       settings.endGroup();
-
       settings.endGroup();
 }
 
@@ -423,11 +400,16 @@ void MainWindow::subsystem(QVBoxLayout* VLay, QVBoxLayout* VLayInd, QSpacerItem*
 
     connect(Indic, &QImageWidget::writeValueSignal, TCPModbus, &TCPModbusCommunication::writeValue);
 
-    connect(PButOn, &QPushButton::clicked,Indic, &QImageWidget::On);
+    connect(PButOn, &QPushButton::clicked, Indic, &QImageWidget::On);
 
     connect(PButOff, &QPushButton::clicked, Indic, &QImageWidget::Off);
 
-     ui->horizontalLayout->addLayout(VLay);
+    connect(this, &MainWindow::enableSignal, Indic, &QImageWidget::setEnabled);
+    connect(this, &MainWindow::enableSignal, PButOff, &QPushButton::setEnabled);
+    connect(this, &MainWindow::enableSignal, PButOn, &QPushButton::setEnabled);
+    connect(this, &MainWindow::enableSignal, Label, &QLabel::setEnabled);
+
+    ui->horizontalLayout->addLayout(VLay);
 
 }
 
@@ -480,6 +462,48 @@ void MainWindow::CurStateInit(int numberOfSubsystem)
    CurStates = a;
 }
 
+
+void MainWindow::logging(QString message)
+{
+    QSqlQuery query;
+    query.prepare("insert into log (Event, date, Time) values (:name, CURRENT_DATE(), CURRENT_TIME());");
+    query.bindValue(":name", message);
+    query.exec();
+    emit update_bd();
+    if(message != "Модбас, соеденение установлено" and errorWarning == false)
+    {
+        errorWarning = true;
+        QSound* play = new QSound (Path);
+        play -> setLoops(QSound::Infinite);
+        play -> play();
+        massege = new QMessageBox;
+        massege -> setText("Ошибка модбас соеденения");
+        massege -> setDetailedText("Ошибка связи Modbus TCP");
+        massege -> addButton(tr("Подтвердить"), QMessageBox::ActionRole);
+        massege -> setIcon(QMessageBox::Critical);
+        massege -> exec();
+        delete massege;
+        delete play;
+        emit enableSignal(false);
+        if (massege->clickedButton()) {
+
+            QSqlQuery query;
+            query.prepare("insert into log (Event, date, Time) values (:name, CURRENT_DATE(), CURRENT_TIME());");
+            query.bindValue(":name","Ошибка модбас подтверждена");
+            query.exec();
+            emit update_bd();
+            AlarmMassege->show();
+         }
+    }
+        if(message == "Модбас, соеденение установлено")
+            {
+            AlarmMassege->hide();
+            errorWarning = false;
+            emit enableSignal(true);
+
+
+            }
+}
 
 void MainWindow::initVariablesSubsys()
 {
