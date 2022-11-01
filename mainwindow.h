@@ -95,6 +95,9 @@ signals:
 private:
     void TakeAPicture();
 
+
+    void WidgetLayout(double widthCof, double heightUpCof, double heightButtomCof);
+
     Ui::MainWindow *ui;
     History_screen *window;
     Settings *settings;

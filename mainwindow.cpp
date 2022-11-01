@@ -24,8 +24,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::startCommunication, TCPModbus, &TCPModbusCommunication::Connection, Qt::QueuedConnection);
     emit (startCommunication(address,502));
 
-
-
     window = new History_screen(this);
 
     initVariablesSubsys();
@@ -57,12 +55,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     AlarmMassege = new QLabel(this);
-    AlarmLayout = new QVBoxLayout(this);
     AlarmMassege->setStyleSheet("color: rgb(255, 0, 0); font-size: 30px");
     AlarmMassege->setAlignment(Qt::AlignCenter);
     AlarmMassege->setText("Нет связи с модулем управления ССО!");
-    AlarmLayout->addWidget(AlarmMassege);
-    ui->verticalLayout_3->addItem(AlarmLayout);
+    ui->verticalLayout_3->addWidget(AlarmMassege);
 
 
     ui->takeAPicture->hide();
@@ -103,8 +99,20 @@ MainWindow::MainWindow(QWidget *parent)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ui->statusBar->showMessage("Москва, ООО 'Аеросвет', 2022");
+    WidgetLayout(1.28, 1.14, 1.37);
 
+    ui->statusBar->showMessage("Москва, ООО 'Аеросвет', 2022");
+}
+
+void MainWindow::WidgetLayout(double widthCof, double heightUpCof, double heightButtomCof)
+{
+    QScreen* screen = QApplication::screens().at(1);
+    int width = screen->availableSize().width();
+    int height = screen->availableSize().height();
+    int width2 = width/widthCof;
+    int height2h = height/heightUpCof;
+    int height2l = height/heightButtomCof;
+    ui->horizontalLayout_2->setContentsMargins (width-width2, (height-height2h)+(height/10), width-width2, height-height2l);
 }
 
 
@@ -443,6 +451,7 @@ void MainWindow::TakeAPicture()
     emit TakeAPicktureSignal();
     ui->takeAPicture->show();
 }
+
 
 //-->
 void MainWindow::sensorShow(TSensor &Sensor, QLCDNumber &Sensorvalue)
