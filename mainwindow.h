@@ -96,12 +96,9 @@ signals:
 private:
     void TakeAPicture();
 
-<<<<<<< HEAD
 
     void WidgetsLayout(double widthCof, double heightUpCof, double heightButtomCof);
 
-=======
->>>>>>> parent of ae199e8 (UI)
     Ui::MainWindow *ui;
     History_screen *window;
     Settings *settings;
