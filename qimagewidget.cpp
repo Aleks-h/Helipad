@@ -8,13 +8,17 @@
 
 QImageWidget::QImageWidget(QString& name, int& numberOfSub,
                                    QVector<bool>& CurState)
-                                      : CurState{CurState[numberOfSub]}
-
+                                      : cur_picture{0},
+                                        enableBit{false},
+                                        button_ON_pushed{false},
+                                        button_OFF_pushed{false},
+                                        numberOfsubsystem{numberOfSub},
+                                        ReqState{0},
+                                        CurState{CurState[numberOfSub]}
 
 
 
 {
-numberOfsubsystem = numberOfSub;
 connect (this, SIGNAL(pixmapChanged()), SLOT(repaint()));
 this -> name = name;
 cur_picture_prev = 0;
@@ -29,8 +33,10 @@ timer->start(1000);
 
 QImageWidget::~QImageWidget()
 {
-    delete timer;
-    delete timer1;
+delete timer;
+delete timer1;
+delete timer2;
+delete timer3;
 }
 
 
@@ -39,21 +45,6 @@ void QImageWidget::setPixmap(QPixmap pixmap)
 _originalImage = pixmap;
 emit pixmapChanged();
 }
-
-//void QImageWidget::connect_timer2()
-//{
- //   connect (timer2, &QTimer::timeout, [&](){
-    //                                         button_ON_pushed = false;
-  //                                          });
-//}
-
-//void QImageWidget::connect_timer3()
-//{
-  //  connect (timer3, &QTimer::timeout, [&](){
-  //                                           button_OFF_pushed = false;
-  //                                          });
-//}
-
 
 void QImageWidget::setEnabled(bool enable)
 {
@@ -69,6 +60,74 @@ void QImageWidget::setEnabled(bool enable)
     AlarmReset();
     state(cur_picture);
     }
+}
+
+void QImageWidget::button_on_pushed()
+{
+    button_ON_pushed = true;
+    if(timer2 == nullptr)
+    {
+    timer2 = new QTimer(this);
+    }
+    timer2->setSingleShot(true);
+    connect (timer2, &QTimer::timeout, [&](){
+                                             button_ON_pushed = false;
+                                            });
+    timer2->start(1700);
+}
+
+void QImageWidget::button_off_pushed()
+{
+    button_OFF_pushed = true;
+    if(timer3 == nullptr)
+    {
+    timer3 = new QTimer(this);
+    }
+    timer3->setSingleShot(true);
+    connect (timer3, &QTimer::timeout, [&](){
+                                             button_OFF_pushed = false;
+                                            });
+    timer3->start(1700);
+}
+
+
+void QImageWidget::On()
+{
+if(enableBit)
+    return;
+
+button_on_pushed();
+
+//if(cur_picture == 1)
+ //  return;
+
+if(ReqState == true)
+    return;
+
+cur_picture = 1;
+ReqState = true;
+
+emit writeValueSignal(numberOfsubsystem, ReqState);
+state(cur_picture);
+}
+
+void QImageWidget::Off()
+{
+if(enableBit)
+    return;
+
+button_off_pushed();
+
+if(cur_picture == 0)
+    return;
+
+//if(cur_picture == 0)
+ //   return;
+
+cur_picture = 0;
+ReqState = false;
+emit writeValueSignal(numberOfsubsystem, ReqState);
+state(cur_picture);
 }
 
 void QImageWidget::state(int cur_picture){
@@ -173,6 +232,8 @@ if (_originalImage.isNull()){
     painter.end();
     }
 }
+
+
 
 void QImageWidget::AlarmCheck()
 {

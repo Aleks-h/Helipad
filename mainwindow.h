@@ -14,7 +14,6 @@
 #include <QLabel>
 #include <QVector>
 #include <QTimer>
-
 #include <QDebug>
 #include <QSqlTableModel>
 #include <QSettings>
@@ -97,7 +96,7 @@ private:
     void TakeAPicture();
 
 
-    void WidgetsLayout(double widthCof, double heightUpCof, double heightButtomCof);
+    void WidgetLayout(double widthCof, double heightUpCof, double heightButtomCof);
 
     Ui::MainWindow *ui;
     History_screen *window;
