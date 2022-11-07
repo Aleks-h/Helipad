@@ -25,22 +25,7 @@ History_screen::History_screen(QWidget *parent) :
 
    ui->TakeAPicture->hide();
 
-   WidgetLayout(1.28, 1, 1.075);
 
-   //widget.move(rect.width()/2-widget.with()/2,rect.height()/2-widget.heigth()/2);
-
-
-}
-
-void History_screen::WidgetLayout(double widthCof, double heightUpCof, double heightButtomCof)
-{
-    QScreen* screen = QApplication::screens().at(1);
-    int width = screen->availableSize().width();
-    int height = screen->availableSize().height();
-    int width2 = width/widthCof;
-    int height2h = height/heightUpCof;
-    int height2l = height/heightButtomCof;
-    ui->horizontalLayout_6->setContentsMargins (width-width2, (height-height2h)+(height/10), width-width2, height-height2l);
 }
 
 void History_screen::createModel(const QStringList &header)

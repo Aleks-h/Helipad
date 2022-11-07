@@ -111,8 +111,6 @@ private:
     Ui::Settings *ui;
     screeenShotWindow *screen;
 
-    void WidgetLayout(double widthCof, double heightUpCof, double heightButtomCof);
-
     int LowerLimitAlarmBuffer1;
 
     int BufAlarmLowerLimit;
