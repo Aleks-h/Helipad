@@ -97,12 +97,9 @@ private:
     void TakeAPicture();
 
 <<<<<<< HEAD
-<<<<<<< HEAD
 
     void WidgetsLayout(double widthCof, double heightUpCof, double heightButtomCof);
 
-=======
->>>>>>> parent of ae199e8 (UI)
 =======
 >>>>>>> parent of ae199e8 (UI)
     Ui::MainWindow *ui;
