@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     database.cpp \
     history_screen.cpp \
+    isubsystemwidget.cpp \
     main.cpp \
     mainwindow.cpp \
     qimagewidget.cpp \
@@ -28,6 +29,7 @@ SOURCES += \
 HEADERS += \
     database.h \
     history_screen.h \
+    isubsystemwidget.h \
     mainwindow.h \
     qimagewidget.h \
     screeenshotwindow.h \

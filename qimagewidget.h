@@ -1,6 +1,6 @@
 #ifndef QIMAGEWIDGET_H
 #define QIMAGEWIDGET_H
-#include <QWidget>
+
 #include <QPixmap>
 #include "QPainter"
 #include <QMessageBox>
@@ -9,45 +9,36 @@
 
 #include <QTimer>
 
-class QImageWidget : public QWidget
+#include "isubsystemwidget.h"
+
+class QImageWidget : public ISubsystemWidget
 {
 Q_OBJECT
 public:
 QImageWidget (QString& name, int& numberOfSub, QVector<bool>& CurState);
 virtual~QImageWidget();
 QString name;
-void state(const int);
 void setPixmap(QPixmap pixmap);
 
 
 private:
 QPixmap _originalImage;
 
-int cur_picture_prev;
-void updateMargins();
-int cur_picture;
-bool ISalarm = 0;
-
-bool enableBit;
-
-void button_on_pushed();
-void button_off_pushed();
-
-bool button_ON_pushed;
-bool button_OFF_pushed;
-
 QTimer* timer;
 QTimer* timer1;
-QTimer* timer2 = nullptr;
-QTimer* timer3 = nullptr;
 
+int cur_picture_prev;
+void updateMargins();
 
+bool ISalarm = 0;
+
+void state(const int) override;
 
 void AlarmReset();
 
-int numberOfsubsystem;
 
-bool ReqState;
+
+
 bool& CurState;
 
 
@@ -61,12 +52,9 @@ QString Path = "./sound.wav";
 QMessageBox* massege;
 
 signals:
+
 void pixmapChanged();
 void update_bd();
-
-bool writeValueSignal(int numberOfsubsystem, bool ReqState);
-
-
 
 public slots:
 

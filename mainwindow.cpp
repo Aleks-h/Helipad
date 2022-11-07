@@ -99,12 +99,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    WidgetLayout(1.28, 1.14, 1.37);
+    WidgetsLayout(1.28, 1.14, 1.37);
 
     ui->statusBar->showMessage("Москва, ООО 'Аеросвет', 2022");
 }
 
-void MainWindow::WidgetLayout(double widthCof, double heightUpCof, double heightButtomCof)
+void MainWindow::WidgetsLayout(double widthCof, double heightUpCof, double heightButtomCof)
 {
     QScreen* screen = QApplication::screens().at(1);
     int width = screen->availableSize().width();
@@ -382,21 +382,25 @@ void MainWindow::subsystem(QVBoxLayout* VLay, QVBoxLayout* VLayInd, QSpacerItem*
     Label->setAlignment(Qt::AlignCenter);
 
     PButOn = new QPushButton (this);
-    PButOn->setText("Вкл.");
+    PButOn->setText("+");
+    PButOn->setStyleSheet("background-color:rgb(46, 52, 54); font-size: 60px");
     PButOn->setMinimumSize(150, 100);
     PButOn->setMaximumSize(150, 100);
 
-    Indic = new QImageWidget (*name, *i, CurStates);
-    Indic->setMinimumSize(150, 100);
-    Indic->setMaximumSize(150, 100);
+    QLCDNumber* LCD = new QLCDNumber (this);
+    //Indic = new QImageWidget (*name, *i, CurStates);
+    LCD->setDigitCount(1);
+    LCD->setMinimumSize(150, 100);
+    LCD->setMaximumSize(150, 100);
 
 
     PButOff = new QPushButton (this);
-    PButOff->setText("Откл.");
+    PButOff->setText("-");
+    PButOff->setStyleSheet("background-color:rgb(46, 52, 54);font-size: 60px");
     PButOff->setMinimumSize(150, 100);
     PButOff->setMaximumSize(150, 100);
 
-    VLayInd->addWidget(Indic);
+    VLayInd->addWidget(LCD);
 
     VLay->addWidget(Label);
     VLay->addWidget(PButOn);
@@ -404,15 +408,15 @@ void MainWindow::subsystem(QVBoxLayout* VLay, QVBoxLayout* VLayInd, QSpacerItem*
     VLay->addWidget(PButOff);
     VLay->addItem(VSpItem);
 
-    connect(Indic, SIGNAL(update_bd()), window, SLOT(SlotCreateModel()));
+  //  connect(Indic, SIGNAL(update_bd()), window, SLOT(SlotCreateModel()));
 
-    connect(Indic, &QImageWidget::writeValueSignal, TCPModbus, &TCPModbusCommunication::writeValue);
+   // connect(Indic, &QImageWidget::writeValueSignal, TCPModbus, &TCPModbusCommunication::writeValue);
 
-    connect(PButOn, &QPushButton::clicked, Indic, &QImageWidget::On);
+  //  connect(PButOn, &QPushButton::clicked, Indic, &QImageWidget::On);
 
-    connect(PButOff, &QPushButton::clicked, Indic, &QImageWidget::Off);
+  //  connect(PButOff, &QPushButton::clicked, Indic, &QImageWidget::Off);
 
-    connect(this, &MainWindow::enableSignal, Indic, &QImageWidget::setEnabled);
+  //  connect(this, &MainWindow::enableSignal, Indic, &QImageWidget::setEnabled);
     connect(this, &MainWindow::enableSignal, PButOff, &QPushButton::setEnabled);
     connect(this, &MainWindow::enableSignal, PButOn, &QPushButton::setEnabled);
     connect(this, &MainWindow::enableSignal, Label, &QLabel::setEnabled);
