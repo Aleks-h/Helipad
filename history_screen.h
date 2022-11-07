@@ -32,7 +32,6 @@ private:
      Ui::History_screen *ui;
      QSqlTableModel  *model;
 
-     void WidgetLayout(double widthCof, double heightUpCof, double heightButtomCof);
 
      QString str;
      QDateTime time;
