@@ -104,6 +104,7 @@ MainWindow::MainWindow(QWidget *parent)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     WidgetsLayout(1.28, 1.14, 1.37);
 
 =======
@@ -121,6 +122,10 @@ void MainWindow::WidgetsLayout(double widthCof, double heightUpCof, double heigh
     int height2l = height/heightButtomCof;
     ui->horizontalLayout_2->setContentsMargins (width-width2, (height-height2h)+(height/10), width-width2, height-height2l);
 =======
+>>>>>>> parent of ae199e8 (UI)
+=======
+    ui->statusBar->showMessage("Москва, ООО 'Аеросвет', 2022");
+
 >>>>>>> parent of ae199e8 (UI)
 }
 
